@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: account-service
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        serviceId: CONFIGSERVER
+      failFast: true

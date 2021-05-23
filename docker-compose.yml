@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  discovery-service:
+    image: yellowpepper.com/microservice-docker-discovery-service:0.0.1-SNAPSHOT
+    ports:
+      - 8761:8761
+  config-service:
+    image: yellowpepper.com/microservice-docker-config-service:0.0.1-SNAPSHOT
+    volumes:
+      - ./config-files:/var/config-files
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER=http://discovery-service:8761/eureka
+        -Dspring.cloud.config.server.native.searchLocations=/var/config-files/
+    depends_on:
+      - discovery-service
+    ports:
+      - 8888:8888
+  account-service:
+    image: yellowpepper.com/microservice-docker-account-service:0.0.1-SNAPSHOT
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER=http://discovery-service:8761/eureka
+    depends_on:
+      - discovery-service
+      - config-service
+    restart: on-failure
+  transfer-service:
+    image: yellowpepper.com/microservice-docker-transfer-service:0.0.1-SNAPSHOT
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER=http://discovery-service:8761/eureka
+    restart: on-failure
+    depends_on:
+      - discovery-service
+      - config-service
+    ports:
+      - 8080:8080

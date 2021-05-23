@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.yellowpepper</groupId>
+	<artifactId>founds-transfer</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>founds-transfer</name>
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>config-service</module>
+		<module>discovery-service</module>
+		<module>account-service</module>
+		<module>transfer-service</module>
+	</modules>
+
+</project>
