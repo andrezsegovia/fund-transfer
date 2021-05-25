@@ -9,9 +9,9 @@ import javax.validation.constraints.NotNull;
 
 
 @Entity
-@Getter @Setter
+@Data
 @NoArgsConstructor
-@AllArgsConstructor @ToString
+@AllArgsConstructor
 public class Transfer {
 
     @Id
@@ -19,23 +19,28 @@ public class Transfer {
     private Integer id;
 
     @NotNull
-    @JsonProperty(value = "amount")
     private int amount;
 
     @NotNull
-    @JsonProperty(value = "currency")
     private String currency;
 
     @NotNull
-    @JsonProperty(value = "origin_account")
     private String originAccount;
 
     @NotNull
-    @JsonProperty(value = "destination_account")
     private String destinationAccount;
 
     @NotNull
-    @JsonProperty(value = "description")
     private String description;
+
+    private String status;
+
+    private String errors;
+
+    private Double taxCollected;
+
+    private Double cad;
+
+
 
 }

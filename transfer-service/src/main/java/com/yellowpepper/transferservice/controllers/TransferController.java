@@ -1,6 +1,9 @@
 package com.yellowpepper.transferservice.controllers;
 
 import com.yellowpepper.transferservice.dtos.Transfer;
+import com.yellowpepper.transferservice.mappers.TransferRequestMapper;
+import com.yellowpepper.transferservice.mappers.TransferResponseMapper;
+import com.yellowpepper.transferservice.pojos.TransferRequest;
 import com.yellowpepper.transferservice.pojos.TransferResponse;
 import com.yellowpepper.transferservice.service.TransferService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,12 @@ public class TransferController {
     @Autowired
     private TransferService transferService;
 
+    @Autowired
+    private TransferRequestMapper transferRequestMapper;
+
+    @Autowired
+    private TransferResponseMapper transferResponseMapper;
+
     /**
      * Handles a request for fund transfer.
      *
@@ -28,9 +37,21 @@ public class TransferController {
      * @return {@link TransferResponse} transfer object response
      */
     @RequestMapping(path = "/", method = RequestMethod.POST)
-    public ResponseEntity<TransferResponse> transfer(@RequestBody Transfer transfer) {
-        transferService.persistTransfer(transfer);
-        return new ResponseEntity<TransferResponse>(new TransferResponse("OK", new String[]{}, 50.00, 66.928861615d),HttpStatus.OK);
+    public ResponseEntity<TransferResponse> transfer(@RequestBody TransferRequest transfer) {
+        Transfer transferStored = transferService.persistTransfer(transferRequestMapper
+                .transferRequestToTransfer(transfer));
+        System.out.println("<------------------------>");
+        System.out.println(transferStored);
+        transferStored.setStatus("OK");
+        transferStored.setTaxCollected(50.0);
+        transferStored.setCad(66.928861615);
+        System.out.println("<------------------------>");
+        System.out.println(transferStored);
+        TransferResponse transferResponse = transferResponseMapper.transferToTransferResponse(transferStored);
+        System.out.println("<------------------------>");
+        System.out.println(transferResponse);
+        //return new ResponseEntity<TransferResponse>(new TransferResponse("OK", new String[]{}, 50.00, 66.928861615d),HttpStatus.OK);
+        return new ResponseEntity<>(transferResponse,HttpStatus.OK);
     }
 
 }
