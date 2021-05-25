@@ -5,10 +5,10 @@ Feature: Client can transfer funds
   the client. If the client exceeds the three transfer per day should be informed and the transfer should be cancel.
 
   Scenario: Client performs a fund transfer successfully
-    Given a client with account number 12345600
+    Given a client with account number "12345600"
     And a funds amount of 1000 USD
-    When wants to make fund transfer of 500 USD
-    And to the account number 12345601
+    When wants to make fund transfer of 500 "USD"
+    And to the account number "12345601"
     And with the description
       """
       Hey dude! I am sending you the money you loaned to me last week.
@@ -21,7 +21,7 @@ Feature: Client can transfer funds
         "status": "OK",
         "errors": [],
         "tax_collected": 50.00,
-        "CAD": 66,928861615
+        "CAD": 66.928861615
       }
       """
 

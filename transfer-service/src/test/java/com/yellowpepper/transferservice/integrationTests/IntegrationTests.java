@@ -39,4 +39,27 @@ public class IntegrationTests {
             }
         });
     }
+
+    public void post(String url, String bodyRequest) throws IOException {
+        final Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json");
+        headers.put("Accept", "application/json");
+        final HeaderSettings headerSettings = new HeaderSettings(headers);
+        final ErrorHandler errorHandler = new ErrorHandler();
+
+        if (restTemplate == null) {
+            restTemplate = new RestTemplate();
+        }
+
+        restTemplate.setErrorHandler(errorHandler);
+        headerSettings.setBody(bodyRequest);
+        latestResponse = restTemplate
+                .execute(url, HttpMethod.POST, headerSettings, response -> {
+                    if (errorHandler.getHadError()) {
+                        return (errorHandler.getResults());
+                    } else {
+                        return (new GenericResponse(response));
+                    }
+                });
+    }
 }
