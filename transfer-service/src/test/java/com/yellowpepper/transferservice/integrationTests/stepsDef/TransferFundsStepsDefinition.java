@@ -52,8 +52,6 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
         int currentStatusCode = latestResponse.getTheResponse().getStatusCode().value();
         assertEquals(statusCode, currentStatusCode);
     }
-
-
     @Then("returns a JSON response")
     public void returns_a_json_response(TransferResponse expectedResponse) throws JsonProcessingException {
         TransferResponse currentTransferResponse = MapToJson.convert(latestResponse.getBody(), TransferResponse.class);
