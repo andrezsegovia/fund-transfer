@@ -20,4 +20,12 @@ public class TransferServiceImpl implements TransferService {
     public Transfer findTransferById(int id) {
         return this.transferRepository.getById(id);
     }
+
+    @Override
+    public Transfer doTransfer(Transfer transfer) {
+        transferRepository.save(transfer);
+
+
+        return null;
+    }
 }

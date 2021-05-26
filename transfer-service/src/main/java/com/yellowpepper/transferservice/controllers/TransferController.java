@@ -50,7 +50,6 @@ public class TransferController {
         TransferResponse transferResponse = transferResponseMapper.transferToTransferResponse(transferStored);
         System.out.println("<------------------------>");
         System.out.println(transferResponse);
-        //return new ResponseEntity<TransferResponse>(new TransferResponse("OK", new String[]{}, 50.00, 66.928861615d),HttpStatus.OK);
         return new ResponseEntity<>(transferResponse,HttpStatus.OK);
     }
 
