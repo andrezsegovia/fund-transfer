@@ -19,7 +19,7 @@ public class Transfer {
     private Integer id;
 
     @NotNull
-    private int amount;
+    private Float amount;
 
     @NotNull
     private String currency;
@@ -37,7 +37,7 @@ public class Transfer {
 
     private String errors;
 
-    private Double taxCollected;
+    private Float taxCollected;
 
     private Double cad;
 

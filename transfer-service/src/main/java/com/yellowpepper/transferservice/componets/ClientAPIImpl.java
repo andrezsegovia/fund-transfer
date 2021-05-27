@@ -24,7 +24,8 @@ public class ClientAPIImpl implements ClientAPI {
         return restTemplate.getForObject(url,returnObj);
     }
 
-    public <T> T post(String url, Map<String, Object> body, Class<T> returnObj) {
+    @Override
+    public <T> T post(String url, Map<Object, Object> body, Class<T> returnObj) {
         //TODO Enhance the GET request to be able to pass Headers
         return restTemplate.postForObject(url, body, returnObj);
     }

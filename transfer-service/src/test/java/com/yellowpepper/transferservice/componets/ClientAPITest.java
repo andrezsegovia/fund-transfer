@@ -1,6 +1,7 @@
 package com.yellowpepper.transferservice.componets;
 
 import com.yellowpepper.transferservice.pojos.Account;
+import com.yellowpepper.transferservice.pojos.AccountResponse;
 import io.cucumber.java.en_old.Ac;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +36,7 @@ public class ClientAPITest {
 
     @Test
     public void shouldDoGetRequest() {
-        Account account = Account.builder()
+        Account account = AccountResponse.builder()
                 .status("OK")
                 .errors(new String[]{})
                 .accountBalance(70000.00f).build();
@@ -47,6 +48,12 @@ public class ClientAPITest {
         Account accountResponse = clientAPI.get("http://localhost:8082/", Account.class);
 
         assertEquals(account, accountResponse);
+    }
+
+    @Test
+    public void shouldDoGetRequestToJSON() {
+        Account account = clientAPI.get("src/test/resources/responses/account_success_response.json", Account.class);
+        System.out.println(account);
     }
 
 }

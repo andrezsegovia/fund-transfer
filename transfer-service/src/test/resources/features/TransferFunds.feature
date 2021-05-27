@@ -25,13 +25,13 @@ Feature: Client can transfer funds
       }
       """
 
-  Scenario: Client perform a fund transfer without enough funds
-
-  Scenario: Client perform a fourth fund transfer
-
-  Scenario: Client should be charge 0.2% per success transfer
-
-  Scenario: Client should be charge 0.5% per success transfer if amount is grater than 100 USD
+#  Scenario: Client perform a fund transfer without enough funds
+#
+#  Scenario: Client perform a fourth fund transfer
+#
+#  Scenario: Client should be charge 0.2% per success transfer
+#
+#  Scenario: Client should be charge 0.5% per success transfer if amount is grater than 100 USD
 
 
 

@@ -1,34 +1,15 @@
-package com.yellowpepper.transferservice.integrationTests;
+package com.yellowpepper.transferservice.integrationTests.commons;
 
-import com.yellowpepper.transferservice.TransferServiceApplication;
-import com.yellowpepper.transferservice.integrationTests.commons.ErrorHandler;
-import com.yellowpepper.transferservice.integrationTests.commons.GenericResponse;
-import com.yellowpepper.transferservice.integrationTests.commons.HeaderSettings;
-import io.cucumber.spring.CucumberContextConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-@ContextConfiguration
-@CucumberContextConfiguration
-@SpringBootTest(classes = TransferServiceApplication.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class IntegrationTests {
-
-    @LocalServerPort
-    protected int port;
-
-    public int getPort() {
-        return port;
-    }
+public class HttpClient {
 
     protected static GenericResponse latestResponse = null;
 

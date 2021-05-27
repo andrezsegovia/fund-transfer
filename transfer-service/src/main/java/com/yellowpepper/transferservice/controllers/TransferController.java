@@ -33,23 +33,14 @@ public class TransferController {
      * Validates the origin account has enough funds. Calculates the amount that will be charge to the origin account
      * for the transfer. Moves the amount from the origin to the destination account. Stores the transfer attempt. And
      * returns the transfer state.
-     * @param transfer  transfer request object
+     * @param transferRequest  transfer request object
      * @return {@link TransferResponse} transfer object response
      */
     @RequestMapping(path = "/", method = RequestMethod.POST)
-    public ResponseEntity<TransferResponse> transfer(@RequestBody TransferRequest transfer) {
-        Transfer transferStored = transferService.persistTransfer(transferRequestMapper
-                .transferRequestToTransfer(transfer));
-        System.out.println("<------------------------>");
-        System.out.println(transferStored);
-        transferStored.setStatus("OK");
-        transferStored.setTaxCollected(50.0);
-        transferStored.setCad(66.928861615);
-        System.out.println("<------------------------>");
-        System.out.println(transferStored);
-        TransferResponse transferResponse = transferResponseMapper.transferToTransferResponse(transferStored);
-        System.out.println("<------------------------>");
-        System.out.println(transferResponse);
+    public ResponseEntity<TransferResponse> transfer(@RequestBody TransferRequest transferRequest) {
+        Transfer transferResult = transferService.doTransfer(transferRequestMapper
+                .transferRequestToTransfer(transferRequest));
+        TransferResponse transferResponse = transferResponseMapper.transferToTransferResponse(transferResult);
         return new ResponseEntity<>(transferResponse,HttpStatus.OK);
     }
 

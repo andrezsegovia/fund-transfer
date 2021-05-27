@@ -1,6 +1,7 @@
 package com.yellowpepper.transferservice.service;
 
 import com.yellowpepper.transferservice.dtos.Transfer;
+import com.yellowpepper.transferservice.execptions.InsufficientFundsException;
 
 public interface TransferService {
 
