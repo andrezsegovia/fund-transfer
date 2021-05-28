@@ -60,12 +60,12 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
         transferRequestBuilder.originAccount(accountNumber);
     }
 
-    @Given("a funds amount of {int} USD")
-    public void a_funds_amount_of_usd(Integer fundAmount) {
+    @Given("a funds amount of {float} USD")
+    public void a_funds_amount_of_usd(Float fundAmount) {
 
     }
 
-    @When("wants to make fund transfer of {int} {string}")
+    @When("wants to make fund transfer of {float} {string}")
     public void wants_to_make_fund_transfer_of_usd(Float amount, String currency) {
         transferRequestBuilder.amount(amount);
         transferRequestBuilder.currency(currency);

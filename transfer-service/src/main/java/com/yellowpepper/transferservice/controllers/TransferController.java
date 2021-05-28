@@ -41,8 +41,6 @@ public class TransferController {
         Transfer transferResult = transferService.doTransfer(transferRequestMapper
                 .transferRequestToTransfer(transferRequest));
         TransferResponse transferResponse = transferResponseMapper.transferToTransferResponse(transferResult);
-        transferResponse.setCad(66.928861615);
-        transferResponse.setTaxCollected(50.0);
         return new ResponseEntity<>(transferResponse,HttpStatus.OK);
     }
 

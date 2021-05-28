@@ -24,7 +24,7 @@ public class AccountAPIImpl implements AccountAPI {
     }
 
     @Override
-    public void discountAmount(Account account, Float amount) throws InsufficientFundsException {
+    public AccountResponse discountAmount(Account account, Float amount) throws InsufficientFundsException {
         Map<Object, Object> requestBody = new HashMap<>();
         requestBody.put("account", account.getAccount());
         requestBody.put("amount", amount);
@@ -34,5 +34,6 @@ public class AccountAPIImpl implements AccountAPI {
         if (!accountResponse.getStatus().equals("OK") || accountResponse.getErrors().length > 0) {
             throw new InsufficientFundsException();
         }
+        return accountResponse;
     }
 }

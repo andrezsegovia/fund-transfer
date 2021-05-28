@@ -27,6 +27,24 @@ public class TransferServiceImpl implements TransferService {
         return this.transferRepository.getById(id);
     }
 
+    private Float calculateTaxAmount(Float transferAmount, Float percentage) {
+        System.out.println("Transfer Tax: " + (transferAmount * percentage));
+        return transferAmount * percentage;
+    }
+
+    private Float calculateTaxPercentage(Float transferAmount) {
+        System.out.println("Transfer Amount: " + transferAmount);
+        if(transferAmount >= 100.0f) {
+            return 0.005f;
+        }
+        return 0.002f;
+    }
+
+    private float convertUSDtoCADCurrency(Float usd) {
+        //TODO unimplemented functionality
+        return usd * 1.21f;
+    }
+
     @Override
     public Transfer doTransfer(Transfer transfer) {
         /**
@@ -39,17 +57,14 @@ public class TransferServiceImpl implements TransferService {
          * 7. Return the transfer information
          */
         try {
-            Float taxAmount = 0f;
-            if(transfer.getAmount() > 1000) {
-                taxAmount = transfer.getAmount() * 0.5f;
-            } else {
-                taxAmount = transfer.getAmount() * 0.2f;
-            }
+            Float taxPercentage = calculateTaxPercentage(transfer.getAmount());
+            Float taxAmount = calculateTaxAmount(transfer.getAmount(), taxPercentage);
             Account account = Account.builder().account(transfer.getOriginAccount()).build();
-            accountAPI.discountAmount(account, transfer.getAmount()+taxAmount);
-            transfer.setStatus("OK");
+            AccountResponse accountResponse = accountAPI
+                    .discountAmount(account, transfer.getAmount() + taxAmount);
+            transfer.setStatus(accountResponse.getStatus());
             transfer.setTaxCollected(taxAmount);
-            transfer.setCad(66.928861615);
+            transfer.setCad(convertUSDtoCADCurrency(taxAmount));
             return transferRepository.save(transfer);
         }catch (InsufficientFundsException exc) {
             transfer.setStatus("Error");

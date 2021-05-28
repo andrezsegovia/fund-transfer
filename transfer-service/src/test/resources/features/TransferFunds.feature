@@ -6,8 +6,8 @@ Feature: Client can transfer funds
 
   Scenario: Client performs a fund transfer successfully
     Given a client with account number "12345600"
-    And a funds amount of 1000 USD
-    When wants to make fund transfer of 500 "USD"
+    And a funds amount of 70000.0 USD
+    When wants to make fund transfer of 5000.0 "USD"
     And to the account number "12345601"
     And with the description
       """
@@ -20,8 +20,8 @@ Feature: Client can transfer funds
       {
         "status": "OK",
         "errors": [],
-        "tax_collected": 50.00,
-        "CAD": 66.928861615
+        "tax_collected": 25.0,
+        "CAD": 30.25
       }
       """
 

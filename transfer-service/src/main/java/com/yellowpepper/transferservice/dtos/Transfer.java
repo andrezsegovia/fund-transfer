@@ -39,7 +39,7 @@ public class Transfer {
 
     private Float taxCollected;
 
-    private Double cad;
+    private float cad;
 
 
 
