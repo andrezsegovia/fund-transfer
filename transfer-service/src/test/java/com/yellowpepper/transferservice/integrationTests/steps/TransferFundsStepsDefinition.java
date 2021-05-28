@@ -1,4 +1,4 @@
-package com.yellowpepper.transferservice.integrationTests.stepsDef;
+package com.yellowpepper.transferservice.integrationTests.steps;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -14,18 +14,10 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.event.annotation.AfterTestClass;
-import org.springframework.test.context.event.annotation.AfterTestExecution;
-import org.springframework.test.context.event.annotation.BeforeTestClass;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
@@ -94,6 +86,20 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
         post("http://localhost:8080" + url, MapToJson.covertToJSONString(transferRequest));
     }
 
+    @When("makes a POST call to {string} but without enough funds")
+    public void makes_a_post_call_to_but_without_enough_funds(String url) throws IOException {
+        AccountResponse accountResponse = AccountResponse.builder().status("ERROR")
+                .errors(new String[]{"insufficient-funds"}).build();
+        wiremock.stubFor(WireMock.post(urlEqualTo("/"))
+                .willReturn(
+                        aResponse()
+                                .withBody(MapToJson.covertToJSONString(accountResponse))
+                                .withHeader("Content-Type", "application/json;charset=UTF-8")
+                                .withStatus(HttpStatus.OK.value())));
+        transferRequest = transferRequestBuilder.build();
+        post("http://localhost:8080" + url, MapToJson.covertToJSONString(transferRequest));
+    }
+
     @Then("transfer should be success with a {int} HTTP Status Code")
     public void transfer_should_be_success_with_a_http_status_code(int statusCode) throws IOException {
         int currentStatusCode = latestResponse.getTheResponse().getStatusCode().value();
@@ -105,4 +111,6 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
         TransferResponse currentTransferResponse = MapToJson.convert(latestResponse.getBody(), TransferResponse.class);
         assertEquals(expectedResponse, currentTransferResponse);
     }
+
+
 }

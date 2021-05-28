@@ -24,9 +24,25 @@ Feature: Client can transfer funds
         "CAD": 30.25
       }
       """
-
-#  Scenario: Client perform a fund transfer without enough funds
-#
+  Scenario: Client performs a fund transfer without enough funds
+    Given a client with account number "12345600"
+    And a funds amount of 1000.0 USD
+    When wants to make fund transfer of 1001.0 "USD"
+    And to the account number "12345601"
+    And with the description
+      """
+      Hey dude! I am sending you the money you loaned to me last week.
+      """
+    And makes a POST call to "/" but without enough funds
+    Then transfer should be success with a 200 HTTP Status Code
+    And returns a JSON response
+      """
+      {
+        "status": "ERROR",
+        "errors": ["insufficient-funds"],
+        "tax_collected": 0.00
+      }
+      """
 #  Scenario: Client perform a fourth fund transfer
 #
 #  Scenario: Client should be charge 0.2% per success transfer

@@ -15,7 +15,7 @@ public class TransferResponse {
     @JsonProperty(value = "errors")
     private String[] errors;
     @JsonProperty(value = "tax_collected")
-    private Double taxCollected;
+    private Float taxCollected;
     @JsonProperty(value = "CAD")
-    private Double cad;
+    private Float cad;
 }

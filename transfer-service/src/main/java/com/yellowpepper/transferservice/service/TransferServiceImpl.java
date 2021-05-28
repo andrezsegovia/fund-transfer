@@ -67,8 +67,9 @@ public class TransferServiceImpl implements TransferService {
             transfer.setCad(convertUSDtoCADCurrency(taxAmount));
             return transferRepository.save(transfer);
         }catch (InsufficientFundsException exc) {
-            transfer.setStatus("Error");
+            transfer.setStatus("ERROR");
             transfer.setErrors(exc.getMessage());
+            transfer.setTaxCollected(0.00f);
             return transferRepository.save(transfer);
         }
     }
