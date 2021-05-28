@@ -28,4 +28,9 @@ public class MapToJson {
         return objectMapper.readValue(from, toClass);
     }
 
+    public static String covertToJSONString(Object obj) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(obj);
+    }
+
 }

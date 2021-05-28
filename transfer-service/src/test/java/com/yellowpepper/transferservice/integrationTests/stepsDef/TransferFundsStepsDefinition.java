@@ -1,37 +1,52 @@
 package com.yellowpepper.transferservice.integrationTests.stepsDef;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.yellowpepper.transferservice.componets.ClientAPI;
-import com.yellowpepper.transferservice.componets.ClientAPIImpl;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import com.yellowpepper.transferservice.integrationTests.IntegrationTests;
-import com.yellowpepper.transferservice.integrationTests.commons.HttpClient;
 import com.yellowpepper.transferservice.integrationTests.commons.MapToJson;
 import com.yellowpepper.transferservice.pojos.AccountResponse;
 import com.yellowpepper.transferservice.pojos.TransferResponse;
+import io.cucumber.java.After;
+import io.cucumber.java.AfterStep;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.client.RestTemplate;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.context.event.annotation.AfterTestClass;
+import org.springframework.test.context.event.annotation.AfterTestExecution;
+import org.springframework.test.context.event.annotation.BeforeTestClass;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static org.junit.Assert.assertEquals;
 
-@ExtendWith(MockitoExtension.class)
+@AutoConfigureWireMock(port = 8082)
 public class TransferFundsStepsDefinition extends IntegrationTests {
 
-    @Mock
-    private RestTemplate restTemplate;
+    public static WireMockServer wiremock = new WireMockServer(8082);
 
-    @InjectMocks
-    private ClientAPI clientAPI = new ClientAPIImpl();
+    @Before
+    public void beforeAll() {
+        wiremock.start();
+    }
+    @AfterStep
+    public void after() {
+        wiremock.resetAll();
+    }
+    @After
+    public void afterAll() {
+        wiremock.shutdown();
+    }
 
     private Map<String, Object> transferRequestBody = new HashMap<>();
 
@@ -63,14 +78,15 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
 
     @When("makes a POST call to {string}")
     public void makes_a_post_call_to(String url) throws IOException {
-        assertNotNull(restTemplate);
         AccountResponse accountResponse = AccountResponse.builder().status("OK").errors(new String[]{}).build();
-        Map<Object, Object> requestBody = new HashMap<>();
-        requestBody.put("account", transferRequestBody.get("origin_account"));
-        requestBody.put("amount", transferRequestBody.get("amount"));
-        Mockito.when(restTemplate.postForObject("http://localhost:8082/", requestBody, AccountResponse.class))
-                .thenReturn(accountResponse);
-        post("http://localhost:8082" + url, MapToJson.convertToJSON(transferRequestBody));
+        wiremock.stubFor(WireMock.post(urlEqualTo("/"))
+                .willReturn(
+                        aResponse()
+                                .withBody(MapToJson.covertToJSONString(accountResponse))
+                                .withHeader("Content-Type", "application/json;charset=UTF-8")
+                                .withStatus(HttpStatus.OK.value())));
+
+        post("http://localhost:8080" + url, MapToJson.convertToJSON(transferRequestBody));
     }
 
     @Then("transfer should be success with a {int} HTTP Status Code")

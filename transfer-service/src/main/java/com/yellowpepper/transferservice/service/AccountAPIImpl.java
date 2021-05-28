@@ -31,7 +31,7 @@ public class AccountAPIImpl implements AccountAPI {
         //TODO optimize hard code
         AccountResponse accountResponse = clientAPI
                 .post("http://localhost:8082/", requestBody, AccountResponse.class);
-        if (accountResponse.getStatus() != "OK" || accountResponse.getErrors().length > 0) {
+        if (!accountResponse.getStatus().equals("OK") || accountResponse.getErrors().length > 0) {
             throw new InsufficientFundsException();
         }
     }

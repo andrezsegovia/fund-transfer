@@ -14,10 +14,8 @@ public class TransferResponse {
     @NonNull
     @JsonProperty(value = "errors")
     private String[] errors;
-    @NonNull
     @JsonProperty(value = "tax_collected")
     private Double taxCollected;
-    @NonNull
     @JsonProperty(value = "CAD")
     private Double cad;
 }
