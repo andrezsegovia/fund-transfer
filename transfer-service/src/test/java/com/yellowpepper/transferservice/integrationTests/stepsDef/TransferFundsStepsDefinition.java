@@ -6,6 +6,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.yellowpepper.transferservice.integrationTests.IntegrationTests;
 import com.yellowpepper.transferservice.integrationTests.commons.MapToJson;
 import com.yellowpepper.transferservice.pojos.AccountResponse;
+import com.yellowpepper.transferservice.pojos.TransferRequest;
 import com.yellowpepper.transferservice.pojos.TransferResponse;
 import io.cucumber.java.After;
 import io.cucumber.java.AfterStep;
@@ -30,13 +31,19 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.junit.Assert.assertEquals;
 
+
 @AutoConfigureWireMock(port = 8082)
 public class TransferFundsStepsDefinition extends IntegrationTests {
 
+    //TODO read the port from the properties file
     public static WireMockServer wiremock = new WireMockServer(8082);
+
+    private TransferRequest.TransferRequestBuilder transferRequestBuilder;
+    private TransferRequest transferRequest;
 
     @Before
     public void beforeAll() {
+        transferRequestBuilder = TransferRequest.builder();
         wiremock.start();
     }
     @AfterStep
@@ -48,11 +55,9 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
         wiremock.shutdown();
     }
 
-    private Map<String, Object> transferRequestBody = new HashMap<>();
-
     @Given("a client with account number {string}")
     public void a_client_with_account_number(String accountNumber) {
-        transferRequestBody.put("origin_account", accountNumber);
+        transferRequestBuilder.originAccount(accountNumber);
     }
 
     @Given("a funds amount of {int} USD")
@@ -61,19 +66,19 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
     }
 
     @When("wants to make fund transfer of {int} {string}")
-    public void wants_to_make_fund_transfer_of_usd(Integer amount, String currency) {
-        transferRequestBody.put("amount", amount);
-        transferRequestBody.put("currency", currency);
+    public void wants_to_make_fund_transfer_of_usd(Float amount, String currency) {
+        transferRequestBuilder.amount(amount);
+        transferRequestBuilder.currency(currency);
     }
 
     @When("to the account number {string}")
     public void to_the_account_number(String destinationAccount) {
-        transferRequestBody.put("destination_account", destinationAccount);
+        transferRequestBuilder.destinationAccount(destinationAccount);
     }
 
     @When("with the description")
     public void with_the_description(String description) {
-        transferRequestBody.put("description", description);
+        transferRequestBuilder.description(description);
     }
 
     @When("makes a POST call to {string}")
@@ -85,8 +90,8 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
                                 .withBody(MapToJson.covertToJSONString(accountResponse))
                                 .withHeader("Content-Type", "application/json;charset=UTF-8")
                                 .withStatus(HttpStatus.OK.value())));
-
-        post("http://localhost:8080" + url, MapToJson.convertToJSON(transferRequestBody));
+        transferRequest = transferRequestBuilder.build();
+        post("http://localhost:8080" + url, MapToJson.covertToJSONString(transferRequest));
     }
 
     @Then("transfer should be success with a {int} HTTP Status Code")
