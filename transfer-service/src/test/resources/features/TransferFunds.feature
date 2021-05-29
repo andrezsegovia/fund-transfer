@@ -63,8 +63,19 @@ Feature: Client can transfer funds
         "tax_collected": 0.00
       }
       """
-#  Scenario: Client should be charge 0.2% per success transfer
-#
+  Scenario: Client should be charge 0.2% per success transfer
+    Given a client with account number "12345600"
+    And a funds amount of 70000.0 USD
+    When wants to make fund transfer of 50.0 "USD"
+    And to the account number "12345601"
+    And with the description
+      """
+      Hey dude! I am sending you the money you loaned to me last week.
+      """
+    And makes a POST call to "/"
+    Then transfer should be success with a 200 HTTP Status Code
+    And the tax collected amount should be 0.1 USD
+
 #  Scenario: Client should be charge 0.5% per success transfer if amount is grater than 100 USD
 
 

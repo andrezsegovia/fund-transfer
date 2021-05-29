@@ -153,6 +153,14 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
         TransferResponse currentTransferResponse = MapToJson.convert(latestResponse.getBody(), TransferResponse.class);
         assertEquals(expectedResponse, currentTransferResponse);
     }
+    @Then("the tax collected amount should be {float} USD")
+    public void the_tax_collected_amount_should_be_usd(Float taxCollected) throws JsonProcessingException {
+        TransferResponse currentTransferResponse = MapToJson.convert(latestResponse.getBody(), TransferResponse.class);
+        assertEquals(taxCollected, currentTransferResponse.getTaxCollected());
+    }
+
+
+
 
 
 }

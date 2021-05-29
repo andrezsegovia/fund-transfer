@@ -68,24 +68,13 @@ public class TransferServiceImpl implements TransferService {
 
     @Override
     public Transfer doTransfer(Transfer transfer) throws ParseException {
-        /**
-         * 1. Retrieve the current fund of the account
-         * 2. Discount the fund amount of the transfer to the current fund
-         * 3. Discount the tax to the current fund
-         * 4. Validate whether the result of the discount is positive or not.
-         * 5. Update the account fund with the new fund
-         * 6. Store the transfer attend on DB
-         * 7. Return the transfer information
-         */
         Account account = Account.builder().account(transfer.getOriginAccount()).build();
-
         if (transferExceedsAmountPerDay(account)) {
             transfer.setStatus("ERROR");
             transfer.setErrors("limit_exceeded");
             transfer.setTaxCollected(0.00f);
             return transfer;
         }
-
         try {
             Float taxPercentage = calculateTaxPercentage(transfer.getAmount());
             Float taxAmount = calculateTaxAmount(transfer.getAmount(), taxPercentage);
