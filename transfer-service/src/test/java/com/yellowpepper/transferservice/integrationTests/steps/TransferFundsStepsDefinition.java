@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.yellowpepper.transferservice.daos.TransferRepository;
-import com.yellowpepper.transferservice.dtos.Transfer;
 import com.yellowpepper.transferservice.integrationTests.IntegrationTests;
 import com.yellowpepper.transferservice.integrationTests.commons.MapToJson;
 import com.yellowpepper.transferservice.mappers.TransferRequestMapper;
@@ -20,9 +19,9 @@ import io.cucumber.java.en.When;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
@@ -45,20 +44,20 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
     private TransferRequestMapper transferRequestMapper;
 
     @Before
-    public void beforeAll() {
+    public void before() {
         transferRequestBuilder = TransferRequest.builder();
-        wiremock.start();
+        //wiremock.start();
     }
 
     @AfterStep
-    public void after() {
-        wiremock.resetAll();
+    public void afterStep() {
+       // wiremock.resetAll();
     }
 
     @After
-    public void afterAll() {
+    public void after() {
         transferRepository.deleteAll();
-        wiremock.shutdown();
+        //wiremock.shutdown();
     }
 
     @Given("a client with account number {string}")
@@ -94,9 +93,6 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
                         .currency("USD")
                         .description("Third Transfer")
                         .build()));
-
-        System.out.println("<--------------------------------------->");
-        transferRepository.findAll().forEach(System.out::println);
     }
 
     @When("wants to make fund transfer of {float} {string}")
@@ -116,7 +112,9 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
     }
 
     @When("makes a POST call to {string}")
-    public void makes_a_post_call_to(String url) throws IOException {
+    public void makes_a_post_call_to(String url) throws IOException, InterruptedException {
+        wiremock.start();
+
         AccountResponse accountResponse = AccountResponse.builder().status("OK").errors(new String[]{}).build();
         wiremock.stubFor(WireMock.post(urlEqualTo("/"))
                 .willReturn(
@@ -126,10 +124,14 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
                                 .withStatus(HttpStatus.OK.value())));
         transferRequest = transferRequestBuilder.build();
         post("http://localhost:8080" + url, MapToJson.covertToJSONString(transferRequest));
+        wiremock.resetAll();
+        wiremock.shutdown();
+        Thread.sleep(500); // TODO Wiremock sometimes fails because the next test run fist than the shutdown finishes
     }
 
     @When("makes a POST call to {string} but without enough funds")
-    public void makes_a_post_call_to_but_without_enough_funds(String url) throws IOException {
+    public void makes_a_post_call_to_but_without_enough_funds(String url) throws IOException, InterruptedException {
+        wiremock.start();
         AccountResponse accountResponse = AccountResponse.builder().status("ERROR")
                 .errors(new String[]{"insufficient-funds"}).build();
         wiremock.stubFor(WireMock.post(urlEqualTo("/"))
@@ -140,6 +142,9 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
                                 .withStatus(HttpStatus.OK.value())));
         transferRequest = transferRequestBuilder.build();
         post("http://localhost:8080" + url, MapToJson.covertToJSONString(transferRequest));
+        wiremock.resetAll();
+        wiremock.shutdown();
+        Thread.sleep(500); // TODO Wiremock sometimes fails because the next test run fist than the shutdown finishes
     }
 
     @Then("transfer should be success with a {int} HTTP Status Code")

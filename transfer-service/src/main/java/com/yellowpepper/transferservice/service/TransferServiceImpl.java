@@ -1,5 +1,6 @@
 package com.yellowpepper.transferservice.service;
 
+import com.yellowpepper.transferservice.commons.DecimalFormatUtil;
 import com.yellowpepper.transferservice.daos.TransferRepository;
 import com.yellowpepper.transferservice.dtos.Transfer;
 import com.yellowpepper.transferservice.execptions.InsufficientFundsException;
@@ -8,6 +9,8 @@ import com.yellowpepper.transferservice.pojos.AccountResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -32,21 +35,19 @@ public class TransferServiceImpl implements TransferService {
     }
 
     private Float calculateTaxAmount(Float transferAmount, Float percentage) {
-        System.out.println("Transfer Tax: " + (transferAmount * percentage));
-        return transferAmount * percentage;
+        return DecimalFormatUtil.format(transferAmount*percentage);
     }
 
     private Float calculateTaxPercentage(Float transferAmount) {
-        System.out.println("Transfer Amount: " + transferAmount);
         if (transferAmount >= 100.0f) {
             return 0.005f;
         }
         return 0.002f;
     }
 
-    private float convertUSDtoCADCurrency(Float usd) {
+    private Float convertUSDtoCADCurrency(Float usd) {
         //TODO unimplemented functionality
-        return usd * 1.21f;
+        return DecimalFormatUtil.format(usd * 1.21f);
     }
 
     boolean transferExceedsAmountPerDay(Account account) throws ParseException {
@@ -79,7 +80,7 @@ public class TransferServiceImpl implements TransferService {
             Float taxPercentage = calculateTaxPercentage(transfer.getAmount());
             Float taxAmount = calculateTaxAmount(transfer.getAmount(), taxPercentage);
             AccountResponse accountResponse = accountAPI
-                    .discountAmount(account, transfer.getAmount() + taxAmount);
+                    .discountAmount(account, taxAmount * transfer.getAmount() );
             transfer.setStatus(accountResponse.getStatus());
             transfer.setTaxCollected(taxAmount);
             transfer.setCad(convertUSDtoCADCurrency(taxAmount));

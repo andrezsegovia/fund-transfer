@@ -41,6 +41,7 @@ public class TransferController {
     public ResponseEntity<TransferResponse> transfer(@RequestBody TransferRequest transferRequest) throws ParseException {
         Transfer transferResult = transferService.doTransfer(transferRequestMapper
                 .transferRequestToTransfer(transferRequest));
+        System.out.println(transferResult);
         TransferResponse transferResponse = transferResponseMapper.transferToTransferResponse(transferResult);
         return new ResponseEntity<>(transferResponse,HttpStatus.OK);
     }
