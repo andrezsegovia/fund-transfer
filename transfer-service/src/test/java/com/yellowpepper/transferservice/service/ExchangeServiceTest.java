@@ -1,31 +1,37 @@
 package com.yellowpepper.transferservice.service;
 
+import com.yellowpepper.transferservice.SpringTestsConfig;
 import com.yellowpepper.transferservice.componets.ClientAPI;
 import com.yellowpepper.transferservice.execptions.ExchangeServiceException;
 import com.yellowpepper.transferservice.pojos.ExchangeResponse;
-import org.junit.Rule;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.Assert.*;
 
 /**
  * Unit test for the Service {@link ExchangeService}
  */
-@RunWith(MockitoJUnitRunner.class)
-public class ExchangeServiceTest {
+public class ExchangeServiceTest extends SpringTestsConfig {
 
     @Mock
     private ClientAPI clientAPI;
 
     @InjectMocks
     private ExchangeService exchangeService = new ExchangeServiceImpl();
+
+    @Value("${local.exchange.service.url}")
+    private String localExchangeServiceURL;
+
+    @Before
+    public void before() {
+        ReflectionTestUtils.setField(exchangeService, "EXCHANGE_RATE_API_URL",  localExchangeServiceURL);
+    }
 
     @Test
     public void shouldExchangeUSDtoCAD() throws ExchangeServiceException {
@@ -70,4 +76,5 @@ public class ExchangeServiceTest {
 
         assertEquals("exchange-currency-error", exception.getMessage());
     }
+
 }

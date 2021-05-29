@@ -20,7 +20,9 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
@@ -30,11 +32,13 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.Assert.assertEquals;
 
 
-@AutoConfigureWireMock(port = 8082)
+@AutoConfigureWireMock
 public class TransferFundsStepsDefinition extends IntegrationTests {
 
-    //TODO read the port from the properties file
-    public static WireMockServer wiremock = new WireMockServer(8082);
+    @Value("${local.account.service.port}")
+    protected int localAccountServicePort;
+
+    public WireMockServer wiremock = new WireMockServer(WireMockSpring.options().port(8082));
 
     private TransferRequest.TransferRequestBuilder transferRequestBuilder;
     private TransferRequest transferRequest;
@@ -47,6 +51,15 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
 
     @Autowired
     private TaxComponent taxComponent;
+    
+    @Value("${local.server.url}")
+    private String localServerURL;
+
+    @Value("${local.account.service.url}")
+    private String localAccountServiceURL; 
+    
+    @Value("${local.exchange.service.url}")
+    private String localExchangeServiceURL;
 
     @Before
     public void before() {
@@ -120,8 +133,11 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
     public void makes_a_post_call_to(String url) throws IOException, InterruptedException {
         transferRequest = transferRequestBuilder.build();
         wiremock.start();
-        AccountResponse accountResponse = AccountResponse.builder().status("OK").errors(new String[]{}).build();
-        wiremock.stubFor(WireMock.post(urlEqualTo("/"))
+        AccountResponse accountResponse = AccountResponse.builder()
+                .status("OK")
+                .errors(new String[]{})
+                .build();
+        wiremock.stubFor(WireMock.post(urlEqualTo("/account"))
                 .willReturn(
                         aResponse()
                                 .withBody(MapToJson.covertToJSONString(accountResponse))
@@ -143,7 +159,7 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
                                 .withHeader("Content-Type", "application/json;charset=UTF-8")
                                 .withStatus(HttpStatus.OK.value())));
         transferRequest = transferRequestBuilder.build();
-        post("http://localhost:8080" + url, MapToJson.covertToJSONString(transferRequest));
+        post(localServerURL + url, MapToJson.covertToJSONString(transferRequest));
         wiremock.resetAll();
         wiremock.shutdown();
         Thread.sleep(500); // TODO Wiremock sometimes fails because the next test run fist than the shutdown finishes
@@ -154,14 +170,14 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
         wiremock.start();
         AccountResponse accountResponse = AccountResponse.builder().status("ERROR")
                 .errors(new String[]{"insufficient-funds"}).build();
-        wiremock.stubFor(WireMock.post(urlEqualTo("/"))
+        wiremock.stubFor(WireMock.post(urlEqualTo("/account"))
                 .willReturn(
                         aResponse()
                                 .withBody(MapToJson.covertToJSONString(accountResponse))
                                 .withHeader("Content-Type", "application/json;charset=UTF-8")
                                 .withStatus(HttpStatus.OK.value())));
         transferRequest = transferRequestBuilder.build();
-        post("http://localhost:8080" + url, MapToJson.covertToJSONString(transferRequest));
+        post(localServerURL + url, MapToJson.covertToJSONString(transferRequest));
         wiremock.resetAll();
         wiremock.shutdown();
         Thread.sleep(500); // TODO Wiremock sometimes fails because the next test run fist than the shutdown finishes
@@ -172,7 +188,7 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
         wiremock.start();
 
         AccountResponse accountResponse = AccountResponse.builder().status("OK").errors(new String[]{}).build();
-        wiremock.stubFor(WireMock.post(urlEqualTo("/"))
+        wiremock.stubFor(WireMock.post(urlEqualTo("/account"))
                 .willReturn(
                         aResponse()
                                 .withBody(MapToJson.covertToJSONString(accountResponse))
@@ -191,7 +207,7 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
                                 .withStatus(HttpStatus.OK.value())));
 
         transferRequest = transferRequestBuilder.build();
-        post("http://localhost:8080/", MapToJson.covertToJSONString(transferRequest));
+        post(localServerURL, MapToJson.covertToJSONString(transferRequest));
 
         wiremock.resetAll();
         wiremock.shutdown();
@@ -209,14 +225,11 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
         TransferResponse currentTransferResponse = MapToJson.convert(latestResponse.getBody(), TransferResponse.class);
         assertEquals(expectedResponse, currentTransferResponse);
     }
+
     @Then("the tax collected amount should be {float} USD")
     public void the_tax_collected_amount_should_be_usd(Float taxCollected) throws JsonProcessingException {
         TransferResponse currentTransferResponse = MapToJson.convert(latestResponse.getBody(), TransferResponse.class);
         assertEquals(taxCollected, currentTransferResponse.getTaxCollected());
     }
-
-
-
-
 
 }

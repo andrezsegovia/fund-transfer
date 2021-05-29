@@ -6,9 +6,12 @@ import com.yellowpepper.transferservice.integrationTests.commons.GenericResponse
 import com.yellowpepper.transferservice.integrationTests.commons.HeaderSettings;
 import io.cucumber.spring.CucumberContextConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.annotation.DirtiesContext;
@@ -23,14 +26,8 @@ import java.util.Map;
 @ContextConfiguration
 @CucumberContextConfiguration
 @SpringBootTest(classes = TransferServiceApplication.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+//@PropertySource("classpath::application.properties")
 public class IntegrationTests {
-
-    @LocalServerPort
-    protected int port;
-
-    public int getPort() {
-        return port;
-    }
 
     protected static GenericResponse latestResponse = null;
 
@@ -75,4 +72,6 @@ public class IntegrationTests {
                     }
                 });
     }
+
+
 }
