@@ -3,8 +3,11 @@ package com.yellowpepper.transferservice.integrationTests.steps;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.yellowpepper.transferservice.daos.TransferRepository;
+import com.yellowpepper.transferservice.dtos.Transfer;
 import com.yellowpepper.transferservice.integrationTests.IntegrationTests;
 import com.yellowpepper.transferservice.integrationTests.commons.MapToJson;
+import com.yellowpepper.transferservice.mappers.TransferRequestMapper;
 import com.yellowpepper.transferservice.pojos.AccountResponse;
 import com.yellowpepper.transferservice.pojos.TransferRequest;
 import com.yellowpepper.transferservice.pojos.TransferResponse;
@@ -14,8 +17,10 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.io.IOException;
 
@@ -33,17 +38,26 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
     private TransferRequest.TransferRequestBuilder transferRequestBuilder;
     private TransferRequest transferRequest;
 
+    @Autowired
+    private TransferRepository transferRepository;
+
+    @Autowired
+    private TransferRequestMapper transferRequestMapper;
+
     @Before
     public void beforeAll() {
         transferRequestBuilder = TransferRequest.builder();
         wiremock.start();
     }
+
     @AfterStep
     public void after() {
         wiremock.resetAll();
     }
+
     @After
     public void afterAll() {
+        transferRepository.deleteAll();
         wiremock.shutdown();
     }
 
@@ -55,6 +69,34 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
     @Given("a funds amount of {float} USD")
     public void a_funds_amount_of_usd(Float fundAmount) {
 
+    }
+
+    @Given("with three successful transfers for today")
+    public void with_three_successful_transfers_for_today() {
+        transferRepository.save(transferRequestMapper.transferRequestToTransfer(
+                transferRequestBuilder
+                        .amount(200.0f)
+                        .destinationAccount("12345601")
+                        .currency("USD")
+                        .description("First Transfer")
+                        .build()));
+        transferRepository.save(transferRequestMapper.transferRequestToTransfer(
+                transferRequestBuilder
+                        .amount(150.56f)
+                        .destinationAccount("111222333")
+                        .currency("USD")
+                        .description("Second Transfer")
+                        .build()));
+        transferRepository.save(transferRequestMapper.transferRequestToTransfer(
+                transferRequestBuilder
+                        .amount(250.32f)
+                        .destinationAccount("111555666")
+                        .currency("USD")
+                        .description("Third Transfer")
+                        .build()));
+
+        System.out.println("<--------------------------------------->");
+        transferRepository.findAll().forEach(System.out::println);
     }
 
     @When("wants to make fund transfer of {float} {string}")

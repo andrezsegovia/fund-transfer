@@ -1,11 +1,13 @@
 package com.yellowpepper.transferservice.dtos;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 
 @Entity
@@ -40,6 +42,14 @@ public class Transfer {
     private Float taxCollected;
 
     private Float cad;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createDate;
+
+    @PrePersist
+    protected void onCreate() {
+        createDate = new Date();
+    }
 
 
 

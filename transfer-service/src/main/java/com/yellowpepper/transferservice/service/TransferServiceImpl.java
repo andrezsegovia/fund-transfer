@@ -8,6 +8,10 @@ import com.yellowpepper.transferservice.pojos.AccountResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 @Service
 public class TransferServiceImpl implements TransferService {
 
@@ -34,7 +38,7 @@ public class TransferServiceImpl implements TransferService {
 
     private Float calculateTaxPercentage(Float transferAmount) {
         System.out.println("Transfer Amount: " + transferAmount);
-        if(transferAmount >= 100.0f) {
+        if (transferAmount >= 100.0f) {
             return 0.005f;
         }
         return 0.002f;
@@ -45,8 +49,25 @@ public class TransferServiceImpl implements TransferService {
         return usd * 1.21f;
     }
 
+    boolean transferExceedsAmountPerDay(Account account) throws ParseException {
+        final int MAX_AMOUNT_TRANSFERS_PER_DAY = 3;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDate = simpleDateFormat.format(new Date());
+        simpleDateFormat.applyPattern("yyyy-MM-dd HH:mm:ss.SSS");
+        Date startDate = simpleDateFormat.parse(currentDate + " 00:00:00.000");
+        Date endDate = simpleDateFormat.parse(currentDate + " 23:59:59.999");
+
+        Integer transferTotal = transferRepository
+                .totalTransfersByCreationDateRange(account.getAccount(), startDate, endDate);
+
+        if (transferTotal >= MAX_AMOUNT_TRANSFERS_PER_DAY) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
-    public Transfer doTransfer(Transfer transfer) {
+    public Transfer doTransfer(Transfer transfer) throws ParseException {
         /**
          * 1. Retrieve the current fund of the account
          * 2. Discount the fund amount of the transfer to the current fund
@@ -56,17 +77,25 @@ public class TransferServiceImpl implements TransferService {
          * 6. Store the transfer attend on DB
          * 7. Return the transfer information
          */
+        Account account = Account.builder().account(transfer.getOriginAccount()).build();
+
+        if (transferExceedsAmountPerDay(account)) {
+            transfer.setStatus("ERROR");
+            transfer.setErrors("limit_exceeded");
+            transfer.setTaxCollected(0.00f);
+            return transfer;
+        }
+
         try {
             Float taxPercentage = calculateTaxPercentage(transfer.getAmount());
             Float taxAmount = calculateTaxAmount(transfer.getAmount(), taxPercentage);
-            Account account = Account.builder().account(transfer.getOriginAccount()).build();
             AccountResponse accountResponse = accountAPI
                     .discountAmount(account, transfer.getAmount() + taxAmount);
             transfer.setStatus(accountResponse.getStatus());
             transfer.setTaxCollected(taxAmount);
             transfer.setCad(convertUSDtoCADCurrency(taxAmount));
             return transferRepository.save(transfer);
-        }catch (InsufficientFundsException exc) {
+        } catch (InsufficientFundsException exc) {
             transfer.setStatus("ERROR");
             transfer.setErrors(exc.getMessage());
             transfer.setTaxCollected(0.00f);

@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Array;
+import java.text.ParseException;
 
 @RestController
 public class TransferController {
@@ -37,7 +38,7 @@ public class TransferController {
      * @return {@link TransferResponse} transfer object response
      */
     @RequestMapping(path = "/", method = RequestMethod.POST)
-    public ResponseEntity<TransferResponse> transfer(@RequestBody TransferRequest transferRequest) {
+    public ResponseEntity<TransferResponse> transfer(@RequestBody TransferRequest transferRequest) throws ParseException {
         Transfer transferResult = transferService.doTransfer(transferRequestMapper
                 .transferRequestToTransfer(transferRequest));
         TransferResponse transferResponse = transferResponseMapper.transferToTransferResponse(transferResult);
