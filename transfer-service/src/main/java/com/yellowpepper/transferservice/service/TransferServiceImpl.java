@@ -1,8 +1,10 @@
 package com.yellowpepper.transferservice.service;
 
 import com.yellowpepper.transferservice.commons.DecimalFormatUtil;
+import com.yellowpepper.transferservice.commons.TaxComponent;
 import com.yellowpepper.transferservice.daos.TransferRepository;
 import com.yellowpepper.transferservice.dtos.Transfer;
+import com.yellowpepper.transferservice.execptions.ExchangeServiceException;
 import com.yellowpepper.transferservice.execptions.InsufficientFundsException;
 import com.yellowpepper.transferservice.pojos.Account;
 import com.yellowpepper.transferservice.pojos.AccountResponse;
@@ -24,6 +26,12 @@ public class TransferServiceImpl implements TransferService {
     @Autowired
     private AccountAPI accountAPI;
 
+    @Autowired
+    private ExchangeService exchangeService;
+
+    @Autowired
+    private TaxComponent taxComponent;
+
     @Override
     public Transfer persistTransfer(Transfer transfer) {
         return this.transferRepository.save(transfer);
@@ -34,21 +42,6 @@ public class TransferServiceImpl implements TransferService {
         return this.transferRepository.getById(id);
     }
 
-    private Float calculateTaxAmount(Float transferAmount, Float percentage) {
-        return DecimalFormatUtil.format(transferAmount*percentage);
-    }
-
-    private Float calculateTaxPercentage(Float transferAmount) {
-        if (transferAmount >= 100.0f) {
-            return 0.005f;
-        }
-        return 0.002f;
-    }
-
-    private Float convertUSDtoCADCurrency(Float usd) {
-        //TODO unimplemented functionality
-        return DecimalFormatUtil.format(usd * 1.21f);
-    }
 
     boolean transferExceedsAmountPerDay(Account account) throws ParseException {
         final int MAX_AMOUNT_TRANSFERS_PER_DAY = 3;
@@ -77,15 +70,15 @@ public class TransferServiceImpl implements TransferService {
             return transfer;
         }
         try {
-            Float taxPercentage = calculateTaxPercentage(transfer.getAmount());
-            Float taxAmount = calculateTaxAmount(transfer.getAmount(), taxPercentage);
+            Float taxPercentage = taxComponent.calculateTaxPercentage(transfer.getAmount());
+            Float taxAmount = taxComponent.calculateTaxAmount(transfer.getAmount(), taxPercentage);
             AccountResponse accountResponse = accountAPI
                     .discountAmount(account, taxAmount * transfer.getAmount() );
             transfer.setStatus(accountResponse.getStatus());
             transfer.setTaxCollected(taxAmount);
-            transfer.setCad(convertUSDtoCADCurrency(taxAmount));
+            transfer.setCad(exchangeService.exchangeUSDtoCAD(taxAmount));
             return transferRepository.save(transfer);
-        } catch (InsufficientFundsException exc) {
+        } catch (InsufficientFundsException | ExchangeServiceException exc) {
             transfer.setStatus("ERROR");
             transfer.setErrors(exc.getMessage());
             transfer.setTaxCollected(0.00f);

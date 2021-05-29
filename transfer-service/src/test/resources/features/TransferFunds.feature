@@ -43,7 +43,7 @@ Feature: Client can transfer funds
         "tax_collected": 0.00
       }
       """
-  Scenario: Client perform a fourth fund transfer
+  Scenario: Client performs a fourth fund transfer
     Given a client with account number "12345600"
     And a funds amount of 70000.0 USD
     And with three successful transfers for today
@@ -83,8 +83,24 @@ Feature: Client can transfer funds
       |100    |           0.5|
       |101    |         0.505|
       |200    |           1.0|
-
-
+  Scenario: Client performs a funds transfer but the exchange service fail
+    Given a client with account number "12345600"
+    When wants to make fund transfer of 1000.00 "USD"
+    And to the account number "12345601"
+    And with the description
+      """
+      Hey dude! I am sending you the money you loaned to me last week.
+      """
+    But the exchange service fails
+    Then transfer should be success with a 200 HTTP Status Code
+    But returns a JSON response
+      """
+      {
+        "status": "ERROR",
+        "errors": ["exchange-currency-error"],
+        "tax_collected": 0.00
+      }
+      """
 
 #  Scenario: Client should be charge 0.5% per success transfer if amount is grater than 100 USD
 

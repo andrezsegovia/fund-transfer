@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ExchangeServiceImpl implements ExchangeService {
 
-    private final String EXCHANGE_RATE_API_URL = "http://exchange-service/exchange";
+    private final String EXCHANGE_RATE_API_URL = "http://localhost:8082/exchange";
 
     @Autowired
     private ClientAPI clientAPI;
