@@ -137,7 +137,7 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
                 .status("OK")
                 .errors(new String[]{})
                 .build();
-        wiremock.stubFor(WireMock.post(urlEqualTo("/account"))
+        wiremock.stubFor(WireMock.post(urlEqualTo("/account/balance"))
                 .willReturn(
                         aResponse()
                                 .withBody(MapToJson.covertToJSONString(accountResponse))
@@ -152,7 +152,7 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
                 .output("CAD")
                 .value(exchangeValueMock)
                 .build();
-        wiremock.stubFor(WireMock.get(urlMatching("/exchange\\?source=USD&output=CAD&value=[0-9]+.[0-9]+$"))
+        wiremock.stubFor(WireMock.get(urlMatching("/exchange/convert\\?source=USD&output=CAD&value=[0-9]+.[0-9]+$"))
                 .willReturn(
                         aResponse()
                                 .withBody(MapToJson.covertToJSONString(exchangeResponseMock))
@@ -170,7 +170,7 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
         wiremock.start();
         AccountResponse accountResponse = AccountResponse.builder().status("ERROR")
                 .errors(new String[]{"insufficient-funds"}).build();
-        wiremock.stubFor(WireMock.post(urlEqualTo("/account"))
+        wiremock.stubFor(WireMock.post(urlEqualTo("/account/balance"))
                 .willReturn(
                         aResponse()
                                 .withBody(MapToJson.covertToJSONString(accountResponse))
@@ -188,7 +188,7 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
         wiremock.start();
 
         AccountResponse accountResponse = AccountResponse.builder().status("OK").errors(new String[]{}).build();
-        wiremock.stubFor(WireMock.post(urlEqualTo("/account"))
+        wiremock.stubFor(WireMock.post(urlEqualTo("/account/balance"))
                 .willReturn(
                         aResponse()
                                 .withBody(MapToJson.covertToJSONString(accountResponse))
@@ -199,7 +199,7 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
         ExchangeResponse exchangeResponseMock = ExchangeResponse.builder()
                 .status("ERROR")
                 .errors(new String[]{""}).build();
-        wiremock.stubFor(WireMock.get(urlEqualTo("/exchange?source=USD&output=CAD&value=5.0"))
+        wiremock.stubFor(WireMock.get(urlEqualTo("/exchange/convert?source=USD&output=CAD&value=5.0"))
                 .willReturn(
                         aResponse()
                                 .withBody(MapToJson.covertToJSONString(exchangeResponseMock))

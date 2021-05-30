@@ -19,7 +19,7 @@ public class ExchangeServiceImpl implements ExchangeService {
 
     @Override
     public Float exchangeUSDtoCAD(Float amount) throws ExchangeServiceException {
-        final String URL = EXCHANGE_RATE_API_URL + "/exchange?source=USD&output=CAD&value="+amount;
+        final String URL = EXCHANGE_RATE_API_URL + "/exchange/convert?source=USD&output=CAD&value="+amount;
         final ExchangeResponse exchangeResponse = clientAPI.get(URL, ExchangeResponse.class);
         if(exchangeResponse.getStatus().equals("ERROR") || exchangeResponse.getErrors().length > 0) {
             throw new ExchangeServiceException();

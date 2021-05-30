@@ -44,7 +44,7 @@ public class ExchangeServiceTest extends SpringTestsConfig {
                 .value(120.745f)
                 .build();
 
-        Mockito.when(clientAPI.get("http://localhost:8082/exchange?source=USD&output=CAD&value="+VALUE_TO_EXCHANGE,
+        Mockito.when(clientAPI.get(localExchangeServiceURL+"/exchange/convert?source=USD&output=CAD&value="+VALUE_TO_EXCHANGE,
                 ExchangeResponse.class))
                 .thenReturn(exchangeResponseMock);
 
@@ -65,7 +65,7 @@ public class ExchangeServiceTest extends SpringTestsConfig {
                 .output("CAD")
                 .build();
 
-        Mockito.when(clientAPI.get("http://localhost:8082/exchange?source=USD&output=CAD&value="+VALUE_TO_EXCHANGE,
+        Mockito.when(clientAPI.get(localExchangeServiceURL+"/exchange/convert?source=USD&output=CAD&value="+VALUE_TO_EXCHANGE,
                 ExchangeResponse.class))
                 .thenReturn(exchangeResponseMock);
 

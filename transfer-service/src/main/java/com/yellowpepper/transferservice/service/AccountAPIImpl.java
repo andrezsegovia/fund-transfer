@@ -32,7 +32,7 @@ public class AccountAPIImpl implements AccountAPI {
         requestBody.put("account", account.getAccount());
         requestBody.put("amount", amount);
         AccountResponse accountResponse = clientAPI
-                .post(ACCOUNT_API_URL+"/account", requestBody, AccountResponse.class);
+                .post(ACCOUNT_API_URL+"/account/balance", requestBody, AccountResponse.class);
         if (accountResponse.getStatus().equals("ERROR") || accountResponse.getErrors().length > 0) {
             throw new InsufficientFundsException();
         }

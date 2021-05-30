@@ -1,6 +1,7 @@
 package com.yellowpepper.transferservice.componets;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -23,5 +24,4 @@ public class ClientAPIImpl implements ClientAPI {
         //TODO Enhance the GET request to be able to pass Headers
         return restTemplate.postForObject(url, body, returnObj);
     }
-
 }
