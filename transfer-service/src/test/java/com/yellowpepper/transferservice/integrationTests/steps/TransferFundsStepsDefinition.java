@@ -137,7 +137,7 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
                 .status("OK")
                 .errors(new String[]{})
                 .build();
-        wiremock.stubFor(WireMock.post(urlEqualTo("/account/debit"))
+        wiremock.stubFor(WireMock.post(urlPathMatching("/account/[a-zA-Z]+"))
                 .willReturn(
                         aResponse()
                                 .withBody(MapToJson.covertToJSONString(accountResponse))
@@ -171,7 +171,7 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
         wiremock.start();
         AccountResponse accountResponse = AccountResponse.builder().status("ERROR")
                 .errors(new String[]{"insufficient-funds"}).build();
-        wiremock.stubFor(WireMock.post(urlEqualTo("/account/debit"))
+        wiremock.stubFor(WireMock.post(urlPathMatching("/account/[a-zA-Z]+"))
                 .willReturn(
                         aResponse()
                                 .withBody(MapToJson.covertToJSONString(accountResponse))
@@ -189,7 +189,7 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
         wiremock.start();
 
         AccountResponse accountResponse = AccountResponse.builder().status("OK").errors(new String[]{}).build();
-        wiremock.stubFor(WireMock.post(urlEqualTo("/account/debit"))
+        wiremock.stubFor(WireMock.post(urlPathMatching("/account/[a-zA-Z]+"))
                 .willReturn(
                         aResponse()
                                 .withBody(MapToJson.covertToJSONString(accountResponse))

@@ -1,6 +1,8 @@
 package com.yellowpepper.transferservice.service;
 
 import com.yellowpepper.transferservice.componets.ClientAPI;
+import com.yellowpepper.transferservice.execptions.AccountCreditException;
+import com.yellowpepper.transferservice.execptions.AccountDebitException;
 import com.yellowpepper.transferservice.execptions.InsufficientFundsException;
 import com.yellowpepper.transferservice.pojos.Account;
 import com.yellowpepper.transferservice.pojos.AccountResponse;
@@ -27,27 +29,27 @@ public class AccountAPIImpl implements AccountAPI {
     }
 
     @Override
-    public AccountResponse credit(Account account, Float amount) throws InsufficientFundsException {
+    public AccountResponse credit(Account account, Float amount) throws AccountCreditException {
         Map<Object, Object> requestBody = new HashMap<>();
         requestBody.put("account", account.getAccount());
-        requestBody.put("credit", amount);
+        requestBody.put("amount", amount);
         AccountResponse accountResponse = clientAPI
                 .post(ACCOUNT_API_URL+"/account/credit", requestBody, AccountResponse.class);
         if (accountResponse.getStatus().equals("ERROR") || accountResponse.getErrors().length > 0) {
-            throw new InsufficientFundsException();
+            throw new AccountCreditException();
         }
         return accountResponse;
     }
 
     @Override
-    public AccountResponse debit(Account account, Float amount) throws InsufficientFundsException {
+    public AccountResponse debit(Account account, Float amount) throws AccountDebitException {
         Map<Object, Object> requestBody = new HashMap<>();
         requestBody.put("account", account.getAccount());
-        requestBody.put("debit", amount);
+        requestBody.put("amount", amount);
         AccountResponse accountResponse = clientAPI
                 .post(ACCOUNT_API_URL+"/account/debit", requestBody, AccountResponse.class);
         if (accountResponse.getStatus().equals("ERROR") || accountResponse.getErrors().length > 0) {
-            throw new InsufficientFundsException();
+            throw new AccountDebitException(String.join(",", accountResponse.getErrors()));
         }
         return accountResponse;
     }

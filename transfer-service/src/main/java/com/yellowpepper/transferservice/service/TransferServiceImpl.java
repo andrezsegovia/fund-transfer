@@ -4,6 +4,8 @@ import com.yellowpepper.transferservice.commons.DecimalFormatUtil;
 import com.yellowpepper.transferservice.commons.TaxComponent;
 import com.yellowpepper.transferservice.daos.TransferRepository;
 import com.yellowpepper.transferservice.dtos.Transfer;
+import com.yellowpepper.transferservice.execptions.AccountCreditException;
+import com.yellowpepper.transferservice.execptions.AccountDebitException;
 import com.yellowpepper.transferservice.execptions.ExchangeServiceException;
 import com.yellowpepper.transferservice.execptions.InsufficientFundsException;
 import com.yellowpepper.transferservice.pojos.Account;
@@ -60,10 +62,12 @@ public class TransferServiceImpl implements TransferService {
         return false;
     }
 
+    // TODO implements transactionality
     @Override
     public Transfer doTransfer(Transfer transfer) throws ParseException {
-        Account account = Account.builder().account(transfer.getOriginAccount()).build();
-        if (transferExceedsAmountPerDay(account)) {
+        Account accountOrigin = Account.builder().account(transfer.getOriginAccount()).build();
+        Account accountDestination = Account.builder().account(transfer.getDestinationAccount()).build();
+        if (transferExceedsAmountPerDay(accountOrigin)) {
             transfer.setStatus("ERROR");
             transfer.setErrors("limit_exceeded");
             transfer.setTaxCollected(0.00f);
@@ -72,13 +76,13 @@ public class TransferServiceImpl implements TransferService {
         try {
             Float taxPercentage = taxComponent.calculateTaxPercentage(transfer.getAmount());
             Float taxAmount = taxComponent.calculateTaxAmount(transfer.getAmount(), taxPercentage);
-            AccountResponse accountResponse = accountAPI
-                    .debit(account, (taxAmount + transfer.getAmount()));
-            transfer.setStatus(accountResponse.getStatus());
+            accountAPI.debit(accountOrigin, (taxAmount + transfer.getAmount()));
+            accountAPI.credit(accountDestination, transfer.getAmount());
+            transfer.setStatus("OK");
             transfer.setTaxCollected(taxAmount);
             transfer.setCad(exchangeService.exchangeUSDtoCAD(taxAmount));
             return transferRepository.save(transfer);
-        } catch (InsufficientFundsException | ExchangeServiceException exc) {
+        } catch (AccountDebitException | ExchangeServiceException | AccountCreditException exc) {
             transfer.setStatus("ERROR");
             transfer.setErrors(exc.getMessage());
             transfer.setTaxCollected(0.00f);
