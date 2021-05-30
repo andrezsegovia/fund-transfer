@@ -14,12 +14,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/account")
 public class AccountDiscountController {
 
     @Autowired
     private AccountDiscountService accountDiscountService;
 
-    @RequestMapping(value =  "/discount", method = RequestMethod.PUT)
+    @RequestMapping(value =  "/balance", method = RequestMethod.PUT)
     public ResponseEntity<AccountResponse> discount(@RequestBody AccountDiscountRequest accountDiscountRequest) {
         Account account = accountDiscountService.discount(accountDiscountRequest);
         AccountResponse accountResponse = AccountResponse.builder().status("OK").accountBalance(account.getAccountBalance()).build();

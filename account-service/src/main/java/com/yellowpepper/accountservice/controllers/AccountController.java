@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/account")
 public class AccountController {
 
     @Autowired
@@ -20,7 +21,7 @@ public class AccountController {
     @Autowired
     private AccountMapper accountMapper;
 
-    @RequestMapping(value = "/account/find", method =  {RequestMethod.POST})
+    @RequestMapping(value = "/find", method =  {RequestMethod.POST})
     public ResponseEntity<AccountResponse> getAccount(@RequestBody AccountRequest accountRequest) {
         Account account = accountService.findAccountByAccountNumber(accountRequest.getAccount());
         AccountResponse accountResponse = AccountResponse.builder().status("OK")
@@ -28,7 +29,7 @@ public class AccountController {
         return new ResponseEntity<>(accountResponse, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/account/create", method = RequestMethod.POST)
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
     public ResponseEntity<AccountResponse> create(@RequestBody AccountRequest accountRequest) {
         Account account = accountService
                 .createAccount(accountMapper.accountRequestToAccount(accountRequest));
