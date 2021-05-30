@@ -27,12 +27,25 @@ public class AccountAPIImpl implements AccountAPI {
     }
 
     @Override
-    public AccountResponse discountAmount(Account account, Float amount) throws InsufficientFundsException {
+    public AccountResponse credit(Account account, Float amount) throws InsufficientFundsException {
         Map<Object, Object> requestBody = new HashMap<>();
         requestBody.put("account", account.getAccount());
-        requestBody.put("account_balance", amount);
+        requestBody.put("credit", amount);
         AccountResponse accountResponse = clientAPI
-                .post(ACCOUNT_API_URL+"/account/balance", requestBody, AccountResponse.class);
+                .post(ACCOUNT_API_URL+"/account/credit", requestBody, AccountResponse.class);
+        if (accountResponse.getStatus().equals("ERROR") || accountResponse.getErrors().length > 0) {
+            throw new InsufficientFundsException();
+        }
+        return accountResponse;
+    }
+
+    @Override
+    public AccountResponse debit(Account account, Float amount) throws InsufficientFundsException {
+        Map<Object, Object> requestBody = new HashMap<>();
+        requestBody.put("account", account.getAccount());
+        requestBody.put("debit", amount);
+        AccountResponse accountResponse = clientAPI
+                .post(ACCOUNT_API_URL+"/account/debit", requestBody, AccountResponse.class);
         if (accountResponse.getStatus().equals("ERROR") || accountResponse.getErrors().length > 0) {
             throw new InsufficientFundsException();
         }

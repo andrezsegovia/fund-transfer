@@ -73,7 +73,7 @@ public class TransferServiceImpl implements TransferService {
             Float taxPercentage = taxComponent.calculateTaxPercentage(transfer.getAmount());
             Float taxAmount = taxComponent.calculateTaxAmount(transfer.getAmount(), taxPercentage);
             AccountResponse accountResponse = accountAPI
-                    .discountAmount(account, (taxAmount + transfer.getAmount()));
+                    .debit(account, (taxAmount + transfer.getAmount()));
             transfer.setStatus(accountResponse.getStatus());
             transfer.setTaxCollected(taxAmount);
             transfer.setCad(exchangeService.exchangeUSDtoCAD(taxAmount));

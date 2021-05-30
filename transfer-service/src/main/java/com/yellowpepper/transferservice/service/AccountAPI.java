@@ -8,6 +8,8 @@ public interface AccountAPI {
 
     Account findAccountByNumber(Integer accountNumber);
 
-    AccountResponse discountAmount(Account account, Float amount) throws InsufficientFundsException;
+    AccountResponse credit(Account account, Float amount) throws InsufficientFundsException;
+
+    AccountResponse debit(Account account, Float amount) throws InsufficientFundsException;
 
 }
