@@ -1,6 +1,7 @@
 package com.yellowpepper.accountservice.controllers;
 
 import com.yellowpepper.accountservice.dtos.Account;
+import com.yellowpepper.accountservice.exceptions.InsufficientFundsException;
 import com.yellowpepper.accountservice.mappers.AccountMapper;
 import com.yellowpepper.accountservice.pojos.AccountUpdateBalanceRequest;
 import com.yellowpepper.accountservice.pojos.AccountRequest;
@@ -36,9 +37,23 @@ public class AccountController {
         return new ResponseEntity<>(accountResponse, HttpStatus.OK);
     }
 
-    @RequestMapping(value =  "/balance", method = RequestMethod.POST)
+    @RequestMapping(value =  "/debit", method = RequestMethod.POST)
     public ResponseEntity<AccountResponse> discount(@RequestBody AccountUpdateBalanceRequest accountDiscountRequest) {
-        Account account = accountService.updateAccountBalance(accountDiscountRequest);
+        try {
+            Account account = accountService.debit(accountDiscountRequest);
+            AccountResponse accountResponse = AccountResponse.builder().status("OK")
+                    .accountBalance(account.getAccountBalance()).errors(new String[]{}).build();
+            return new ResponseEntity<>(accountResponse, HttpStatus.OK);
+        } catch (InsufficientFundsException e) {
+            // TODO the API must use the corresponding Http Status Codes to indicate errors rather than always 200
+            return new ResponseEntity<>(AccountResponse.builder().status("ERROR")
+                    .errors(new String[]{e.getMessage()}).build(), HttpStatus.OK);
+        }
+    }
+
+    @RequestMapping(value = "/credit", method = RequestMethod.POST)
+    public ResponseEntity<AccountResponse> credit(@RequestBody AccountUpdateBalanceRequest accountUpdateBalanceRequest) {
+        Account account = accountService.credit(accountUpdateBalanceRequest);
         AccountResponse accountResponse = AccountResponse.builder().status("OK")
                 .accountBalance(account.getAccountBalance()).errors(new String[]{}).build();
         return new ResponseEntity<>(accountResponse, HttpStatus.OK);

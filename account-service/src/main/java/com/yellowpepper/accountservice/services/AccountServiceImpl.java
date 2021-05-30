@@ -2,6 +2,7 @@ package com.yellowpepper.accountservice.services;
 
 import com.yellowpepper.accountservice.daos.AccountRepository;
 import com.yellowpepper.accountservice.dtos.Account;
+import com.yellowpepper.accountservice.exceptions.InsufficientFundsException;
 import com.yellowpepper.accountservice.pojos.AccountUpdateBalanceRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,9 +23,20 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account updateAccountBalance(AccountUpdateBalanceRequest accountUpdateBalanceRequest) {
-        accountRepository.updateAccountBalanceByAccount(accountUpdateBalanceRequest.getAccount(),
-                accountUpdateBalanceRequest.getBalance());
-        return accountRepository.findAccountByAccount(accountUpdateBalanceRequest.getAccount());
+    public Account credit(AccountUpdateBalanceRequest accountUpdateBalanceRequest) {
+        Account account = accountRepository.findAccountByAccount(accountUpdateBalanceRequest.getAccount());
+        account.setAccountBalance(account.getAccountBalance() + accountUpdateBalanceRequest.getAmount());
+        return accountRepository.save(account);
+    }
+
+    @Override
+    public Account debit(AccountUpdateBalanceRequest accountUpdateBalanceRequest) throws InsufficientFundsException {
+        Account account = accountRepository.findAccountByAccount(accountUpdateBalanceRequest.getAccount());
+        Float newAccountBalance = account.getAccountBalance() - accountUpdateBalanceRequest.getAmount();
+        if(newAccountBalance < 0) {
+            throw new InsufficientFundsException();
+        }
+        account.setAccountBalance(newAccountBalance);
+        return accountRepository.save(account);
     }
 }
