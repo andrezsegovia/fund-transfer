@@ -30,7 +30,7 @@ public class AccountAPIImpl implements AccountAPI {
     public AccountResponse discountAmount(Account account, Float amount) throws InsufficientFundsException {
         Map<Object, Object> requestBody = new HashMap<>();
         requestBody.put("account", account.getAccount());
-        requestBody.put("amount", amount);
+        requestBody.put("account_balance", amount);
         AccountResponse accountResponse = clientAPI
                 .post(ACCOUNT_API_URL+"/account/balance", requestBody, AccountResponse.class);
         if (accountResponse.getStatus().equals("ERROR") || accountResponse.getErrors().length > 0) {

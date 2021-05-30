@@ -1,14 +1,16 @@
 package com.yellowpepper.accountservice.pojos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AccountDiscountRequest {
+public class AccountUpdateBalanceRequest {
     @NonNull
     private String account;
     @NonNull
-    private Float discount;
+    @JsonProperty("account_balance")
+    private Float balance;
 }

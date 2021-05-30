@@ -10,7 +10,7 @@ import lombok.*;
 public class AccountResponse {
     @NonNull
     private String status;
-    private String[] errors;
+    private String[] errors = new String[]{};
     @JsonProperty("account_balance")
     private Float accountBalance;
 }

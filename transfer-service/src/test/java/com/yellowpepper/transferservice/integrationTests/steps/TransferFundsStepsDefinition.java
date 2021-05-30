@@ -144,7 +144,8 @@ public class TransferFundsStepsDefinition extends IntegrationTests {
                                 .withHeader("Content-Type", "application/json;charset=UTF-8")
                                 .withStatus(HttpStatus.OK.value())));
 
-        Float exchangeValueMock = taxComponent.calculateTaxAmount(transferRequest.getAmount(), taxComponent.calculateTaxPercentage(transferRequest.getAmount())) * 1.21f;
+        Float exchangeValueMock = taxComponent.calculateTaxAmount(transferRequest.getAmount(),
+                taxComponent.calculateTaxPercentage(transferRequest.getAmount())) * 1.21f;
         ExchangeResponse exchangeResponseMock = ExchangeResponse.builder()
                 .status("OK")
                 .errors(new String[]{})
