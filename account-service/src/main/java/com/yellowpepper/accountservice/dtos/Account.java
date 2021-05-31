@@ -15,16 +15,18 @@ import java.util.Date;
 @Entity
 public class Account {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     @NotNull
     private String account;
     @NotNull
+    @Column(name = "account_balance")
     private Float accountBalance;
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "create_date")
     private Date createDate;
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "update_date")
     private Date updateDate;
     @PrePersist
     protected void onCreate() {
