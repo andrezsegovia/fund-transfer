@@ -1,12 +1,12 @@
-package com.yellowpepper.accountservice.controllers;
+package com.andrezsegovia.accountservice.controllers;
 
-import com.yellowpepper.accountservice.dtos.Account;
-import com.yellowpepper.accountservice.exceptions.InsufficientFundsException;
-import com.yellowpepper.accountservice.mappers.AccountMapper;
-import com.yellowpepper.accountservice.pojos.AccountUpdateBalanceRequest;
-import com.yellowpepper.accountservice.pojos.AccountRequest;
-import com.yellowpepper.accountservice.pojos.AccountResponse;
-import com.yellowpepper.accountservice.services.AccountService;
+import com.andrezsegovia.accountservice.dtos.Account;
+import com.andrezsegovia.accountservice.exceptions.InsufficientFundsException;
+import com.andrezsegovia.accountservice.mappers.AccountMapper;
+import com.andrezsegovia.accountservice.pojos.AccountUpdateBalanceRequest;
+import com.andrezsegovia.accountservice.pojos.AccountRequest;
+import com.andrezsegovia.accountservice.pojos.AccountResponse;
+import com.andrezsegovia.accountservice.services.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,7 +1,7 @@
-package com.yellowpepper.accountservice.mappers;
+package com.andrezsegovia.accountservice.mappers;
 
-import com.yellowpepper.accountservice.dtos.Account;
-import com.yellowpepper.accountservice.pojos.AccountRequest;
+import com.andrezsegovia.accountservice.dtos.Account;
+import com.andrezsegovia.accountservice.pojos.AccountRequest;
 import org.mapstruct.Mapper;
 
 @Mapper

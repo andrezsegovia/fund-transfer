@@ -1,4 +1,4 @@
-package com.yellowpepper.accountservice.pojos;
+package com.andrezsegovia.accountservice.pojos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;

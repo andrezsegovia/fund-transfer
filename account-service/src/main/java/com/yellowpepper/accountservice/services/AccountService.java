@@ -1,10 +1,10 @@
-package com.yellowpepper.accountservice.services;
+package com.andrezsegovia.accountservice.services;
 
-import com.yellowpepper.accountservice.daos.AccountRepository;
-import com.yellowpepper.accountservice.dtos.Account;
-import com.yellowpepper.accountservice.exceptions.InsufficientFundsException;
-import com.yellowpepper.accountservice.pojos.AccountRequest;
-import com.yellowpepper.accountservice.pojos.AccountUpdateBalanceRequest;
+import com.andrezsegovia.accountservice.daos.AccountRepository;
+import com.andrezsegovia.accountservice.dtos.Account;
+import com.andrezsegovia.accountservice.exceptions.InsufficientFundsException;
+import com.andrezsegovia.accountservice.pojos.AccountRequest;
+import com.andrezsegovia.accountservice.pojos.AccountUpdateBalanceRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

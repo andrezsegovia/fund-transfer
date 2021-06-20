@@ -1,11 +1,11 @@
 version: '3.8'
 services:
   discovery-service:
-    image: yellowpepper.com/microservice-docker-discovery-service:0.0.1-SNAPSHOT
+    image: andrezsegovia.com/microservice-docker-discovery-service:0.0.1-SNAPSHOT
     ports:
       - 8761:8761
   config-service:
-    image: yellowpepper.com/microservice-docker-config-service:0.0.1-SNAPSHOT
+    image: andrezsegovia.com/microservice-docker-config-service:0.0.1-SNAPSHOT
     volumes:
       - ./config-files:/var/config-files
     environment:
@@ -17,7 +17,7 @@ services:
     ports:
       - 8888:8888
   account-service:
-    image: yellowpepper.com/microservice-docker-account-service:0.0.1-SNAPSHOT
+    image: andrezsegovia.com/microservice-docker-account-service:0.0.1-SNAPSHOT
     environment:
       - JAVA_OPTS=
         -DEUREKA_SERVER=http://discovery-service:8761/eureka
@@ -28,7 +28,7 @@ services:
     ports:
       - 8082:8082
   exchange-service:
-      image: yellowpepper.com/microservice-docker-exchange-service:0.0.1-SNAPSHOT
+      image: andrezsegovia.com/microservice-docker-exchange-service:0.0.1-SNAPSHOT
       environment:
         - JAVA_OPTS=
           -DEUREKA_SERVER=http://discovery-service:8761/eureka
@@ -39,7 +39,7 @@ services:
       ports:
         - 8084:8084
   transfer-service:
-    image: yellowpepper.com/microservice-docker-transfer-service:0.0.1-SNAPSHOT
+    image: andrezsegovia.com/microservice-docker-transfer-service:0.0.1-SNAPSHOT
     environment:
       - JAVA_OPTS=
         -DEUREKA_SERVER=http://discovery-service:8761/eureka

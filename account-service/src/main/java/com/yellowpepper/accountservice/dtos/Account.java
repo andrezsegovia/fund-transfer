@@ -1,4 +1,4 @@
-package com.yellowpepper.accountservice.dtos;
+package com.andrezsegovia.accountservice.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

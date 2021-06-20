@@ -1,6 +1,6 @@
-package com.yellowpepper.accountservice.daos;
+package com.andrezsegovia.accountservice.daos;
 
-import com.yellowpepper.accountservice.dtos.Account;
+import com.andrezsegovia.accountservice.dtos.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

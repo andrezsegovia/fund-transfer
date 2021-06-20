@@ -1,4 +1,4 @@
-package com.yellowpepper.accountservice.exceptions;
+package com.andrezsegovia.accountservice.exceptions;
 
 /**
  * Exception to indicate that the account does not have enough funds to make the transfer

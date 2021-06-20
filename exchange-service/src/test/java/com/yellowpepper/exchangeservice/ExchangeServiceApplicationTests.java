@@ -1,4 +1,4 @@
-package com.yellowpepper.exchangeservice;
+package com.andrezsegovia.exchangeservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
